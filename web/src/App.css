@@ -1,0 +1,23 @@
+.navbar-link {
+  color: white;
+}
+
+.navbar-link:hover {
+  color: gold;
+}
+
+.app {
+  margin-top: 2%;
+}
+
+.link-home {
+  display: block;
+}
+
+.link-home:hover {
+  text-decoration: none;
+}
+
+.header {
+  margin-bottom: 2%;
+}
