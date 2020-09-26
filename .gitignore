@@ -1,0 +1,6 @@
+web/node_modules
+**/.idea/
+**/bin/
+obj/
+Properties/launchSettings.json
+src/Imports/*
