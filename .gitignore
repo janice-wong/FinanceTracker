@@ -1,5 +1,7 @@
-.idea/
-bin/
+**/.idea/
+**/bin/
+**/node_modules
+
 obj/
 Properties/launchSettings.json
 src/Imports/*
