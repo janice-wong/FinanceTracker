@@ -1,6 +1,7 @@
-import { Expense, ExpenseData, ExpenseMonth } from './types';
+import { Expense, ExpenseData, ExpenseMonth, MonthlyExpenseTotal } from './types';
 import moment from 'moment';
 import axios from 'axios';
+import { groupBy, sum } from 'ramda';
 
 const expensesUrl = "https://localhost:5001/expenses";
 
@@ -35,10 +36,27 @@ export const getMonthsForExpenses = (expenses: Expense[]): Set<string> => {
   return new Set<string>(expenseMonths.map(expenseMonth => `${moment().month(expenseMonth.month).format("MMM")} ${expenseMonth.year}`));
 };
 
-export const getExpenseMonth = (monthString: string): ExpenseMonth =>
+export const getMonthlyTotals = (expenses: Expense[]): MonthlyExpenseTotal[] => {
+  const monthlyExpenseTotals = [];
+  const monthlyExpenses = groupBy((expense) => getExpenseMonthTextByDate(expense.transactionDate), expenses);
+  for (const month in monthlyExpenses) {
+    monthlyExpenseTotals.push({
+      formattedExpenseMonth: month,
+      total: sum(monthlyExpenses[month].map((expense) => expense.amount))
+    } as MonthlyExpenseTotal);
+  }
+  return monthlyExpenseTotals;
+};
+
+export const getExpenseMonthTextByDate = (transactionDate: Date): string => {
+  const date = new Date(transactionDate);
+  return `${moment().month(date.getMonth()).format("MMM")} ${date.getFullYear()}`;
+};
+
+export const getExpenseMonth = (formattedExpenseMonth: string): ExpenseMonth =>
   ({
-    month: getMonthIndexedAtOne(moment().month(monthString.slice(0, 3)).toDate()),
-    year: parseInt(monthString.slice(4))
+    month: getMonthIndexedAtOne(moment().month(formattedExpenseMonth.slice(0, 3)).toDate()),
+    year: parseInt(formattedExpenseMonth.slice(4))
   } as ExpenseMonth);
 
 export const filterExpensesByMonth = (expenseMonth: ExpenseMonth, expenses: Expense[]): Expense[] =>
@@ -49,3 +67,7 @@ export const filterExpensesByMonth = (expenseMonth: ExpenseMonth, expenses: Expe
   });
 
 const getMonthIndexedAtOne = (transactionDate: Date): number => transactionDate.getMonth() + 1;
+
+export const formatCurrency = (amount: Number) => amount.toFixed(2);
+
+export const getCurrencyStyle = (amount: Number) => amount < 0 ? { color: 'red' } : { color: 'black' };

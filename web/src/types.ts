@@ -48,3 +48,8 @@ export interface ExpenseMonth {
   month: number,
   year: number
 }
+
+export interface MonthlyExpenseTotal {
+  formattedExpenseMonth: string,
+  total: number
+}

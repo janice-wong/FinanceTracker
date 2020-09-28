@@ -2,9 +2,20 @@ import React, { FC } from 'react';
 import { HomeProps } from 'src/types'
 import FileUpload from './FileUpload';
 
+import './Home.css';
+import CollapsePage from './CollapsePage';
+import {
+  MDBBtn,
+  MDBCol,
+  MDBContainer,
+  MDBRow
+} from 'mdbreact';
+
 export const Home: FC<HomeProps> = ({ importedFileName}) => {
   return (
     <div>
+      <CollapsePage />
+
       <div className="card mb-4">
         <div className="card-header">
           Imports
@@ -20,16 +31,13 @@ export const Home: FC<HomeProps> = ({ importedFileName}) => {
           <div className="card-header">
             Prompts
           </div>
-          <div className="card-body">
-            <div className="card-deck">
-              <div className="card">
-                <a href="/expenses" className="btn btn-primary">See all expenses</a>
-              </div>
-              <div className="card">
-                <a href="/months" className="btn btn-primary">See expenses by month</a>
-              </div>
-            </div>
-          </div>
+
+          <MDBContainer>
+            <MDBRow>
+              <MDBCol><MDBBtn href="/expenses" className="btn-block" color="primary">See all expenses</MDBBtn></MDBCol>
+              <MDBCol><MDBBtn href="/months" className="btn-block" color="primary">See all expenses by month</MDBBtn></MDBCol>
+            </MDBRow>
+          </MDBContainer>
         </div>
       }
     </div>

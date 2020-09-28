@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 export const AppHeader: FC = () => {
   const isHomePage = () => window.location.pathname === "/";
-  const headerText = 'FinanceTracker';
+  const headerText = 'Finance Tracker';
 
   return (
     <div className="container app">
