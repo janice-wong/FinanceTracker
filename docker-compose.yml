@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Docker.Web.Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - app
+
+  app:
+    build:
+      context: .
+      dockerfile: Docker.App.Dockerfile
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: financetracker
+      DB_USER: postgres
+      DB_PASSWORD: admin
+    ports:
+      - 8080:80
+    depends_on:
+      - migrations
+
+  migrations:
+    image: flyway/flyway:latest-alpine
+    volumes:
+      - ./flyway/sql:/flyway/sql
+    command: -url=jdbc:postgresql://db:5432/financetracker -user=postgres -password=admin migrate
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: financetracker
+    ports:
+      - 5432:5432

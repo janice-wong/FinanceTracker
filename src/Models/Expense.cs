@@ -1,4 +1,5 @@
 using System;
+using FinanceTracker.Enums;
 
 namespace FinanceTracker.Models
 {
@@ -7,8 +8,11 @@ namespace FinanceTracker.Models
         public DateTime TransactionDate { get; set; }
         public DateTime PostDate { get; set; }
         public string Description { get; set; }
-        public string Category { get; set; }
-        public string Type { get; set; }
+        public ExpenseCategory Category { get; set; }
+        public ExpenseType Type { get; set; }
         public decimal Amount { get; set; }
+        public DateTime ImportDate { get; set; }
+
+        public Expense() { }
     }
 }

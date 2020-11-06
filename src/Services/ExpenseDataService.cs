@@ -1,71 +1,92 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.IO;
+using System.Data;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
-using CsvHelper;
+using Dapper;
+using FinanceTracker.Database;
 using FinanceTracker.Models;
-using Microsoft.AspNetCore.Http;
+using Npgsql;
 
 namespace FinanceTracker.Services
 {
     public class ExpenseDataService
     {
-        private const string ImportPath = "src/Imports";
+        public async Task<Result<List<Expense>>> List()
+        {
+            var sql = $@"
+                SELECT
+                    transaction_date AS {nameof(Expense.TransactionDate)},
+                    post_date AS {nameof(Expense.PostDate)},
+                    description AS {nameof(Expense.Description)},
+                    amount AS {nameof(Expense.Amount)},
+                    expense_category AS {nameof(Expense.Category)},
+                    expense_type AS {nameof(Expense.Type)},
+                    import_date AS {nameof(Expense.ImportDate)}
+                FROM expense;";
 
-        public Result<ReadOnlyCollection<Expense>> ReadExpensesFromCsv() =>
-            GetCsvReader()
-                .Map(csvReader => csvReader.GetRecords<Expense>())
-                .Bind(FilterExpenses)
-                .Map(expenses => expenses.ToList().AsReadOnly());
+            return await Result.Try(
+                async () => (await ExecuteWithNewConnection(connection => connection.QueryAsync<Expense>(sql)))
+                    .ToList(),
+                exception => throw new Exception(exception.Message));
+        }
 
-        public Result<string> GetImportedFileName() =>
-            GetImportedFiles()
-                .Ensure(filePaths => filePaths.Count <= 1, "There can be at most one imported file.")
-                .Map(filePaths => Path.GetFileName(filePaths.SingleOrDefault()));
+        public async Task Create(List<Expense> expenses)
+        {
+            var sql = $@"
+                INSERT INTO expense (
+                    transaction_date,
+                    post_date,
+                    description,
+                    amount,
+                    expense_category,
+                    expense_type,
+                    import_date)
+                VALUES (
+                    @{nameof(Expense.TransactionDate)},
+                    @{nameof(Expense.PostDate)},
+                    @{nameof(Expense.Description)},
+                    @{nameof(Expense.Amount)},
+                    @{nameof(Expense.Category)}::expense_category,
+                    @{nameof(Expense.Type)}::expense_type,
+                    @{nameof(Expense.ImportDate)});";
 
-        public async Task<Result> ImportFile(IFormFile file) =>
             await Result.Try(
                 async () =>
                 {
-                    DeleteImportedFiles();
+                    foreach (var expense in expenses)
+                    {
+                        var parameters = new
+                        {
+                            expense.TransactionDate,
+                            expense.PostDate,
+                            expense.Description,
+                            expense.Amount,
+                            Category = expense.Category.ToString(),
+                            Type = expense.Type.ToString(),
+                            CreationDate = DateTime.UtcNow.Date
+                        };
 
-                    var filePath = $"{ImportPath}/{file.FileName}";
-                    await using var stream = new FileStream(filePath, FileMode.Create);
-                    await file.CopyToAsync(stream);
+                        await ExecuteWithNewConnection(async connection =>
+                            await connection.ExecuteAsync(sql, parameters));
+                    }
                 },
-                exception => throw new ApplicationException(exception.Message));
+                exception => throw new Exception(exception.Message));
+        }
 
-        private static Result<IEnumerable<Expense>> FilterExpenses(IEnumerable<Expense> expenses) =>
-            Result.Try(() => expenses.Where(e => e.Type != "Payment"),
-            exception => throw new ApplicationException(exception.Message));
+        public async Task DeleteAll()
+        {
+            var sql = "DELETE * FROM expense;";
+            await Result.Try(
+                async () => await ExecuteWithNewConnection(connection => connection.ExecuteAsync(sql)),
+                exception => throw new Exception(exception.Message));
+        }
 
-        private static Result<CsvReader> GetCsvReader() =>
-            GetStreamReader()
-                // .Map(r => new CsvReader(r, CultureInfo.InvariantCulture));
-                .Map(r =>
-                {
-                    var csv = new CsvReader(r, CultureInfo.InvariantCulture);
-                    csv.Configuration.PrepareHeaderForMatch =
-                        (header, index) => Regex.Replace(header, " ", string.Empty);
-
-                    return csv;
-                });
-
-        private static Result<StreamReader> GetStreamReader() =>
-            GetImportedFiles()
-                .Ensure(filePaths => filePaths.Count == 1, "There should be one imported file.")
-                .Map(filePaths => new StreamReader(filePaths.Single()));
-
-        private static Result<List<string>> GetImportedFiles() =>
-            Result.Try(
-                () => Directory.GetFiles(ImportPath).ToList(),
-                exception => throw new ApplicationException(exception.Message));
-
-        private static void DeleteImportedFiles() => GetImportedFiles().Tap(filePaths => filePaths.ForEach(File.Delete));
+        private async Task<T> ExecuteWithNewConnection<T>(Func<IDbConnection, Task<T>> dataAccessMethod)
+        {
+            await using var connection = new NpgsqlConnection(DatabaseConfig.GetConnectionString());
+            return await dataAccessMethod(connection);
+        }
     }
 }

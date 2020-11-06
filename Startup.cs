@@ -25,8 +25,9 @@ namespace FinanceTracker
             }));
 
             services.AddControllers();
-            services.AddScoped<ExpenseDataService>();
+            services.AddScoped<ImportService>();
             services.AddScoped<ExpenseService>();
+            services.AddScoped<ExpenseDataService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
