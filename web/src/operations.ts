@@ -3,38 +3,22 @@ import moment from 'moment';
 import axios from 'axios';
 import { groupBy, sum } from 'ramda';
 
-const expensesUrl = "https://localhost:5001/expenses";
+const expensesUrl = "http://localhost:8080/expenses";
 
 export const loadExpenses = () => {
   return axios.get(expensesUrl).then((response) => response.data);
-};
-
-export const loadImportedFile = () => {
-  const url = `${expensesUrl}/fileUpload`;
-  return axios.get(url).then((response) => response.data);
 };
 
 export const uploadFile = (file: File) => {
   const formData = new FormData();
   formData.set("file", file);
 
-  const url = `${expensesUrl}/fileUpload`;
+  const url = `${expensesUrl}/import`;
   axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 };
 
 export const updateTypes = (expenses: ExpenseData[]) =>
   expenses.map(expense => ({...expense, transactionDate: moment(expense.transactionDate)}));
-
-export const getMonthsForExpenses = (expenses: Expense[]): Set<string> => {
-  const expenseMonths = expenses.map(expense => {
-    const transactionDate = new Date(expense.transactionDate);
-    return ({
-      month: transactionDate.getMonth(),
-      year: transactionDate.getFullYear()
-    } as ExpenseMonth);
-  });
-  return new Set<string>(expenseMonths.map(expenseMonth => `${moment().month(expenseMonth.month).format("MMM")} ${expenseMonth.year}`));
-};
 
 export const getMonthlyTotals = (expenses: Expense[]): MonthlyExpenseTotal[] => {
   const monthlyExpenseTotals = [];

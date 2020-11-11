@@ -1,7 +1,6 @@
 import { RouteComponentProps } from 'react-router-dom';
 
 export interface AppState {
-  importedFileName: string,
   expenses: Expense[]
 }
 
@@ -12,7 +11,7 @@ export interface FileUploadState {
 }
 
 export interface HomeProps {
-  importedFileName: string,
+  expenses: Expense[]
 }
 
 export interface MonthlyExpensesProps extends Partial<RouteComponentProps<MonthParams>> {

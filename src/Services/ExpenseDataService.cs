@@ -65,7 +65,7 @@ namespace FinanceTracker.Services
                             expense.Amount,
                             Category = expense.Category.ToString(),
                             Type = expense.Type.ToString(),
-                            CreationDate = DateTime.UtcNow.Date
+                            expense.ImportDate
                         };
 
                         await ExecuteWithNewConnection(async connection =>
@@ -77,7 +77,7 @@ namespace FinanceTracker.Services
 
         public async Task DeleteAll()
         {
-            var sql = "DELETE * FROM expense;";
+            var sql = "DELETE FROM expense;";
             await Result.Try(
                 async () => await ExecuteWithNewConnection(connection => connection.ExecuteAsync(sql)),
                 exception => throw new Exception(exception.Message));

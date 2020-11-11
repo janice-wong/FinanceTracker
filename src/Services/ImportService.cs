@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using CsvHelper;
 using FinanceTracker.Enums;
+using FinanceTracker.Mappers;
 using FinanceTracker.Models;
 using Microsoft.AspNetCore.Http;
 
@@ -25,17 +27,35 @@ namespace FinanceTracker.Services
             await Result.Try(
                 async () =>
                 {
-                    using (var reader = new StreamReader(file.OpenReadStream()))
+                    using var reader = new StreamReader(file.OpenReadStream());
+                    using var csv = new CsvReader(reader, CultureInfo.InvariantCulture)
                     {
-                        var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
-                        csvReader.Configuration.PrepareHeaderForMatch =
-                            (header, index) => Regex.Replace(header, " ", string.Empty);
-                        csvReader.Configuration.HeaderValidated = null;
-                        csvReader.Configuration.MissingFieldFound = null;
+                        Configuration =
+                        {
+                            PrepareHeaderForMatch = (header, index) => Regex.Replace(header, " ", string.Empty),
+                            IgnoreBlankLines = true,
+                            HasHeaderRecord = true,
+                            HeaderValidated = null,
+                            MissingFieldFound = null,
+                            ShouldSkipRecord = record => record.All(string.IsNullOrEmpty)
+                        }
+                    };
 
-                        var expenses = csvReader.GetRecords<Expense>().Where(e => e.Type != ExpenseType.Payment).ToList();
-                        await _expenseDataService.Create(expenses);
+                    var expenses = new List<Expense>();
+                    await csv.ReadAsync();
+                    csv.ReadHeader();
+                    while (await csv.ReadAsync())
+                    {
+                        expenses.Add(new Expense(
+                            csv.GetField<DateTime>("TransactionDate"),
+                            csv.GetField<DateTime>("PostDate"),
+                            csv.GetField<string>("Description"),
+                            csv.GetField<string>("Category").MapToExpenseCategory(),
+                            csv.GetField<ExpenseType>("Type"),
+                            csv.GetField<decimal>("Amount")));
                     }
+
+                    await _expenseDataService.Create(expenses);
                 },
                 exception => throw new ApplicationException(exception.Message));
     }

@@ -1,18 +1,41 @@
 using System;
+using System.Text.Json.Serialization;
+using CsvHelper.Configuration.Attributes;
 using FinanceTracker.Enums;
 
 namespace FinanceTracker.Models
 {
     public class Expense
     {
-        public DateTime TransactionDate { get; set; }
-        public DateTime PostDate { get; set; }
-        public string Description { get; set; }
-        public ExpenseCategory Category { get; set; }
-        public ExpenseType Type { get; set; }
-        public decimal Amount { get; set; }
+        public DateTime TransactionDate { get; }
+        public DateTime PostDate { get; }
+        public string Description { get; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ExpenseCategory Category { get; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ExpenseType Type { get; }
+        public decimal Amount { get; }
+
+        [Ignore]
         public DateTime ImportDate { get; set; }
 
         public Expense() { }
+
+        public Expense(
+            DateTime transactionDate,
+            DateTime postDate,
+            string description,
+            ExpenseCategory category,
+            ExpenseType type,
+            decimal amount)
+        {
+            TransactionDate = transactionDate;
+            PostDate = postDate;
+            Description = description;
+            Category = category;
+            Type = type;
+            Amount = amount;
+            ImportDate = DateTime.UtcNow;
+        }
     }
 }

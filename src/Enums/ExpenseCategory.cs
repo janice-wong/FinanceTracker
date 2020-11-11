@@ -10,6 +10,7 @@ namespace FinanceTracker.Enums
         Travel,
         FeesAndAdjustments,
         Gas,
-        Entertainment
+        Entertainment,
+        Misc
     }
 }

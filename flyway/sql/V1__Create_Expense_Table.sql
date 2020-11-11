@@ -7,7 +7,8 @@ CREATE TYPE expense_category AS ENUM (
     'Travel',
     'FeesAndAdjustments',
     'Gas',
-    'Entertainment'
+    'Entertainment',
+    'Misc'
 );
 
 CREATE TYPE expense_type AS ENUM ('Undefined', 'Sale', 'Adjustment', 'Return', 'Payment');

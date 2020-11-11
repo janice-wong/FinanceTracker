@@ -23,12 +23,15 @@ namespace FinanceTracker.Controllers
         }
 
         [HttpGet]
-        public IReadOnlyCollection<Expense> List() => _expenseService.ListExpenses().Result.Value;
+        public IReadOnlyCollection<Expense> List() =>
+            _expenseService.ListExpenses()
+                .Tap(_ => Console.WriteLine("Expenses listed"))
+                .Result.Value;
 
         [HttpPost("import")]
-        public async Task<IActionResult> Post(IFormFile file) =>
+        public async Task<string> Post(IFormFile file) =>
             await _importService.ImportFile(file)
                 .OnFailure(errorMessage => throw new ApplicationException(errorMessage))
-                .Finally(_ => Ok());
+                .Finally(_ => file.FileName);
     }
 }
