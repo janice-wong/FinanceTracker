@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package finance_tracker;
+
+option csharp_namespace = "FinanceTracker.Grpc";
+
+import "Protos/google/type/date.proto";
+
+message ListExpensesResponse {
+  repeated Expense expenses = 1;
+}
+
+message Expense {
+  enum ExpenseCategory {
+    EXPENSE_CATEGORY_UNDEFINED = 0;
+    EXPENSE_CATEGORY_FOOD_AND_DRINK = 1;
+    EXPENSE_CATEGORY_GROCERIES = 2;
+    EXPENSE_CATEGORY_SHOPPING = 3;
+    EXPENSE_CATEGORY_HEALTH_AND_WELLNESS = 4;
+    EXPENSE_CATEGORY_TRAVEL = 5;
+    EXPENSE_CATEGORY_FEES_AND_ADJUSTMENTS = 6;
+    EXPENSE_CATEGORY_GAS = 7;
+    EXPENSE_CATEGORY_ENTERTAINMENT = 8;
+    EXPENSE_CATEGORY_MISC = 9;
+  }
+  enum ExpenseType {
+    EXPENSE_TYPE_UNDEFINED = 0;
+    EXPENSE_TYPE_SALE = 1;
+    EXPENSE_TYPE_RETURN = 2;
+    EXPENSE_TYPE_ADJUSTMENT = 3;
+    EXPENSE_TYPE_PAYMENT = 4;
+  }
+  google.type.Date transaction_date = 1;
+  google.type.Date post_date = 2;
+  string description = 3;
+  ExpenseCategory expense_category = 4;
+  ExpenseType expense_type = 5;
+  double amount = 6;
+}

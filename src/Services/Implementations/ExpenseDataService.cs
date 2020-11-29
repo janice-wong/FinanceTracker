@@ -7,11 +7,12 @@ using CSharpFunctionalExtensions;
 using Dapper;
 using FinanceTracker.Database;
 using FinanceTracker.Models;
+using FinanceTracker.Services.Interfaces;
 using Npgsql;
 
-namespace FinanceTracker.Services
+namespace FinanceTracker.Services.Implementations
 {
-    public class ExpenseDataService
+    public class ExpenseDataService : IExpenseDataService
     {
         public async Task<Result<List<Expense>>> List()
         {

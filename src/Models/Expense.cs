@@ -10,11 +10,9 @@ namespace FinanceTracker.Models
         public DateTime TransactionDate { get; }
         public DateTime PostDate { get; }
         public string Description { get; }
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ExpenseCategory Category { get; }
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ExpenseType Type { get; }
-        public decimal Amount { get; }
+        public double Amount { get; }
 
         [Ignore]
         public DateTime ImportDate { get; set; }
@@ -27,7 +25,7 @@ namespace FinanceTracker.Models
             string description,
             ExpenseCategory category,
             ExpenseType type,
-            decimal amount)
+            double amount)
         {
             TransactionDate = transactionDate;
             PostDate = postDate;

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package finance_tracker;
+
+option csharp_namespace = "FinanceTracker.Grpc";
+
+import "Protos/finance_tracker/expense.proto";
+import "Protos/google/api/annotations.proto";
+import "Protos/google/protobuf/empty.proto";
+import "Protos/google/type/date.proto";
+
+service FinanceTracker {
+  rpc ListExpenses (google.protobuf.Empty) returns (ListExpensesResponse);
+  rpc UploadFile (stream UploadFileRequest) returns (UploadFileResponse);
+}
+
+message UploadFileRequest {
+  bytes content = 1;
+}
+
+message UploadFileResponse {
+  enum UploadStatusCode {
+    UPLOAD_STATUS_CODE_UNDEFINED = 0;
+    UPLOAD_STATUS_CODE_OK = 1;
+    UPLOAD_STATUS_CODE_FAILED = 2;
+  }
+  UploadStatusCode status_code = 1;
+}

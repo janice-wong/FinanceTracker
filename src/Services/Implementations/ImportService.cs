@@ -10,25 +10,26 @@ using CsvHelper;
 using FinanceTracker.Enums;
 using FinanceTracker.Mappers;
 using FinanceTracker.Models;
-using Microsoft.AspNetCore.Http;
+using FinanceTracker.Services.Interfaces;
 
-namespace FinanceTracker.Services
+namespace FinanceTracker.Services.Implementations
 {
-    public class ImportService
+    public class ImportService : IImportService
     {
-        private readonly ExpenseDataService _expenseDataService;
+        private readonly IExpenseDataService _expenseDataService;
 
-        public ImportService(ExpenseDataService expenseDataService)
+        public ImportService(IExpenseDataService expenseDataService)
         {
             _expenseDataService = expenseDataService;
         }
 
-        public async Task<Result> ImportFile(IFormFile file) =>
+        public async Task<Result> ImportExpenses(byte[] fileContent) =>
             await Result.Try(
                 async () =>
                 {
-                    using var reader = new StreamReader(file.OpenReadStream());
-                    using var csv = new CsvReader(reader, CultureInfo.InvariantCulture)
+                    await using var memoryStream = new MemoryStream(fileContent);
+                    using var streamReader = new StreamReader(memoryStream);
+                    using var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture)
                     {
                         Configuration =
                         {
@@ -42,17 +43,20 @@ namespace FinanceTracker.Services
                     };
 
                     var expenses = new List<Expense>();
-                    await csv.ReadAsync();
-                    csv.ReadHeader();
-                    while (await csv.ReadAsync())
+
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    await csvReader.ReadAsync();
+                    csvReader.ReadHeader();
+
+                    while (await csvReader.ReadAsync())
                     {
                         expenses.Add(new Expense(
-                            csv.GetField<DateTime>("TransactionDate"),
-                            csv.GetField<DateTime>("PostDate"),
-                            csv.GetField<string>("Description"),
-                            csv.GetField<string>("Category").MapToExpenseCategory(),
-                            csv.GetField<ExpenseType>("Type"),
-                            csv.GetField<decimal>("Amount")));
+                            csvReader.GetField<DateTime>("TransactionDate"),
+                            csvReader.GetField<DateTime>("PostDate"),
+                            csvReader.GetField<string>("Description"),
+                            csvReader.GetField<string>("Category").MapToExpenseCategory(),
+                            csvReader.GetField<ExpenseType>("Type"),
+                            csvReader.GetField<double>("Amount")));
                     }
 
                     await _expenseDataService.Create(expenses);
