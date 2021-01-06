@@ -42,3 +42,13 @@ services:
       POSTGRES_DB: financetracker
     ports:
       - 5432:5432
+
+  app-gw:
+    build:
+      context: ./gen/grpc-gateway
+    ports:
+      - 50051:80
+    links:
+      - app
+    environment:
+      - FINANCETRACKER_BACKEND=app:80

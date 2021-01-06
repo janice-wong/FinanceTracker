@@ -15,17 +15,39 @@ namespace FinanceTracker
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            // services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
+            // {
+            //     builder.WithOrigins("https://localhost:5001").AllowAnyMethod().AllowAnyHeader();
+            // }));
+            //
+            // services.AddControllers();
             services.AddScoped<IExpenseRequestHandler, ExpenseRequestHandler>();
             services.AddScoped<IExpenseService, ExpenseService>();
             services.AddScoped<IExpenseDataService, ExpenseDataService>();
             services.AddScoped<IImportService, ImportService>();
 
             services.AddGrpc();
+            // services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            // {
+            //     builder.AllowAnyOrigin()
+            //         .AllowAnyMethod()
+            //         .AllowAnyHeader()
+            //         .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+            // }));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // app.UseCors(builder => builder
+            //     .AllowAnyOrigin()
+            //     .AllowAnyMethod()
+            //     .AllowAnyHeader());
+            //
+            // app.UseHttpsRedirection();
+
             app.UseRouting();
+
+            // app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

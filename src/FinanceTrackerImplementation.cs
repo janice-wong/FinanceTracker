@@ -18,9 +18,9 @@ namespace FinanceTracker
         public override Task<ListExpensesResponse> ListExpenses(Empty request, ServerCallContext context) =>
             _expenseRequestHandler.ListExpenses();
 
-        public override Task<UploadFileResponse> UploadFile(
-            IAsyncStreamReader<UploadFileRequest> requestStream,
-            ServerCallContext context) =>
-            _expenseRequestHandler.ImportExpenses(requestStream);
+        // public override Task<UploadFileResponse> UploadFile(
+        //     IAsyncStreamReader<UploadFileRequest> requestStream,
+        //     ServerCallContext context) =>
+        //     _expenseRequestHandler.ImportExpenses(requestStream);
     }
 }

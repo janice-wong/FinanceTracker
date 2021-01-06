@@ -3,7 +3,7 @@ import moment from 'moment';
 import axios from 'axios';
 import { groupBy, sum } from 'ramda';
 
-const expensesUrl = "http://localhost:8080/expenses";
+const expensesUrl = "http://localhost:50051/expenses";
 
 export const loadExpenses = () => {
   return axios.get(expensesUrl).then((response) => response.data);

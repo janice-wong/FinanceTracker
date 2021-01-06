@@ -4,3 +4,5 @@
 
 obj/
 Properties/launchSettings.json
+
+gen/
