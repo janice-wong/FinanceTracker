@@ -9,6 +9,8 @@ namespace FinanceTracker
 {
     public class Startup
     {
+        private const string CorsPolicyName = "ApiCorsPolicy";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -19,9 +21,12 @@ namespace FinanceTracker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
+            services.AddCors(options => options.AddPolicy(CorsPolicyName, builder =>
             {
-                builder.WithOrigins("https://localhost:5001").AllowAnyMethod().AllowAnyHeader();
+                builder
+                    .WithOrigins("http://localhost:3000")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
             }));
 
             services.AddControllers();
@@ -38,14 +43,11 @@ namespace FinanceTracker
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(CorsPolicyName);
 
             app.UseAuthorization();
 

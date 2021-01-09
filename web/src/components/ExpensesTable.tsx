@@ -1,17 +1,11 @@
 import React, { FC } from 'react';
 import shortid from 'shortid';
-import { groupBy, prop } from 'ramda';
 
 import { ExpenseRow } from './ExpenseRow'
 import { Expenses } from '../types';
-import { getMonthlyTotals } from '../operations';
 
-export const ExpensesTable: FC<Expenses> = ({ expenses }) => {
-  console.log(getMonthlyTotals(expenses))
-const la = groupBy(prop('category'), expenses);
-console.log(la);
-
-  return (
+export const ExpensesTable: FC<Expenses> = ({ expenses }) =>
+  (
     <div>
       <table className="table">
         <thead>
@@ -40,4 +34,3 @@ console.log(la);
       </table>
     </div>
   );
-};

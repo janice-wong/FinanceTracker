@@ -5,9 +5,7 @@ import { groupBy, sum } from 'ramda';
 
 const expensesUrl = "http://localhost:8080/expenses";
 
-export const loadExpenses = () => {
-  return axios.get(expensesUrl).then((response) => response.data);
-};
+export const loadExpenses = () => axios.get(expensesUrl).then((response) => response.data);
 
 export const uploadFile = (file: File) => {
   const formData = new FormData();
