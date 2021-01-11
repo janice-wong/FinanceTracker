@@ -23,7 +23,7 @@ namespace FinanceTracker.Services
             _expenseDataService = expenseDataService;
         }
 
-        public async Task<Result> ImportFile(IFormFile file) =>
+        public async Task<Result<string>> ImportFile(IFormFile file) =>
             await Result.Try(
                 async () =>
                 {
@@ -56,6 +56,8 @@ namespace FinanceTracker.Services
                     }
 
                     await _expenseDataService.Create(expenses);
+
+                    return file.FileName;
                 },
                 exception => throw new ApplicationException(exception.Message));
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace FinanceTracker
 {
@@ -30,6 +31,7 @@ namespace FinanceTracker
             }));
 
             services.AddControllers();
+            services.AddLogging();
             services.AddScoped<ImportService>();
             services.AddScoped<ExpenseService>();
             services.AddScoped<ExpenseDataService>();

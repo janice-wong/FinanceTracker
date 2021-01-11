@@ -1,11 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
-using FinanceTracker.Models;
+using FinanceTracker.Extensions;
 using FinanceTracker.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace FinanceTracker.Controllers
 {
@@ -15,23 +15,40 @@ namespace FinanceTracker.Controllers
     {
         private readonly ImportService _importService;
         private readonly ExpenseService _expenseService;
+        private readonly ILogger<ExpensesController> _logger;
 
-        public ExpensesController(ImportService importService, ExpenseService expenseService)
+        public ExpensesController(
+            ImportService importService,
+            ExpenseService expenseService,
+            ILogger<ExpensesController> logger)
         {
             _importService = importService;
             _expenseService = expenseService;
+            _logger = logger;
         }
 
         [HttpGet]
-        public IReadOnlyCollection<Expense> List() =>
-            _expenseService.ListExpenses()
-                .Tap(_ => Console.WriteLine("Expenses listed"))
-                .Result.Value;
+        public async Task<IActionResult> List() =>
+            await _expenseService.ListExpenses()
+                .Tap(_ => _logger.LogInformation("Expenses listed."))
+                .UnwrapOrThrow("Unable to list expenses");
 
         [HttpPost("import")]
-        public async Task<string> Post(IFormFile file) =>
-            await _importService.ImportFile(file)
-                .OnFailure(errorMessage => throw new ApplicationException(errorMessage))
-                .Finally(_ => file.FileName);
+        public async Task<IActionResult> Post(IFormFile file)
+        {
+            try
+            {
+                return await _importService.ImportFile(file)
+                    .OnFailure(errorMessage => _logger.LogError(errorMessage))
+                    .UnwrapOrThrow($"Unable to import file {file.FileName}");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.StackTrace);
+                return BadRequestWithError(e);
+            }
+        }
+
+        private IActionResult BadRequestWithError(Exception e) => BadRequest(new { Error = e.Message });
     }
 }
