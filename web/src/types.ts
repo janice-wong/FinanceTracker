@@ -7,7 +7,12 @@ export interface AppState {
 export interface FileUploadProps extends RouteComponentProps { }
 
 export interface FileUploadState {
-  selectedFile: File
+  selectedFile: File,
+  error: string
+}
+
+export interface FileUploadResult {
+  success: boolean
 }
 
 export interface HomeProps {

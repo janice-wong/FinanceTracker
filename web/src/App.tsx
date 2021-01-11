@@ -6,7 +6,7 @@ import { AppHeader } from 'src/components/AppHeader'
 import { ExpensesTable } from 'src/components/ExpensesTable'
 import { Months } from 'src/components/Months'
 import { MonthlyExpenses } from 'src/components/MonthlyExpenses'
-import { loadExpenses, updateTypes } from './operations'
+import { loadExpenses, convertTransactionDateToMoment } from './operations'
 import { AppState } from './types';
 import './App.css';
 
@@ -16,8 +16,8 @@ class App extends Component {
   };
 
   componentDidMount = async () => {
-      const data = await loadExpenses().then(updateTypes);
-      this.setState({ expenses: data });
+    const data = await loadExpenses().then(convertTransactionDateToMoment);
+    this.setState({ expenses: data });
   };
 
   render() {

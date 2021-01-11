@@ -1,21 +1,24 @@
-import { Expense, ExpenseData, ExpenseMonth, MonthlyExpenseTotal } from './types';
+import { Expense, ExpenseData, ExpenseMonth, FileUploadResult, MonthlyExpenseTotal } from './types';
 import moment from 'moment';
-import axios from 'axios';
+import { Api } from './api';
 import { groupBy, sum } from 'ramda';
 
-const expensesUrl = "http://localhost:8080/expenses";
+export const loadExpenses = () => Api.listExpenses().then(response => response.data);
 
-export const loadExpenses = () => axios.get(expensesUrl).then((response) => response.data);
-
-export const uploadFile = (file: File) => {
+export const uploadFile = async (file: File): Promise<FileUploadResult> => {
   const formData = new FormData();
   formData.set("file", file);
 
-  const url = `${expensesUrl}/import`;
-  axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+  try {
+    await Api.importExpenses(formData);
+    return { success: true };
+  }
+  catch (e) {
+    return { success: false };
+  }
 };
 
-export const updateTypes = (expenses: ExpenseData[]) =>
+export const convertTransactionDateToMoment = (expenses: ExpenseData[]) =>
   expenses.map(expense => ({...expense, transactionDate: moment(expense.transactionDate)}));
 
 export const getMonthlyTotals = (expenses: Expense[]): MonthlyExpenseTotal[] => {

@@ -22,8 +22,7 @@ export const Home: FC<HomeProps> = ({ expenses }) =>
 
             <MDBContainer>
               <MDBRow>
-                <MDBCol><MDBBtn href="/expenses" className="btn-block" color="primary">See all
-                  expenses</MDBBtn></MDBCol>
+                <MDBCol><MDBBtn href="/expenses" className="btn-block" color="primary">See all expenses</MDBBtn></MDBCol>
                 <MDBCol><MDBBtn href="/months" className="btn-block" color="primary">See all expenses by month</MDBBtn></MDBCol>
               </MDBRow>
             </MDBContainer>
