@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FinanceTracker.Extensions;
@@ -47,6 +48,22 @@ namespace FinanceTracker.Controllers
                 _logger.LogError(e.StackTrace);
                 return BadRequestWithError(e);
             }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAll()
+        {
+            try
+            {
+                await _expenseService.DeleteExpenses();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.StackTrace);
+                return BadRequestWithError(e);
+            }
+
+            return new OkObjectResult(HttpStatusCode.OK);
         }
 
         private IActionResult BadRequestWithError(Exception e) => BadRequest(new { Error = e.Message });

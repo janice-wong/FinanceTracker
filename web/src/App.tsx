@@ -3,7 +3,7 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom'
 
 import { Home } from 'src/components/Home'
 import { AppHeader } from 'src/components/AppHeader'
-import { ExpensesTable } from 'src/components/ExpensesTable'
+import ExpensesTable from 'src/components/ExpensesTable'
 import { Months } from 'src/components/Months'
 import { MonthlyExpenses } from 'src/components/MonthlyExpenses'
 import { loadExpenses, convertTransactionDateToMoment } from './operations'

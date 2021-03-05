@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { ExpenseMonth, MonthlyExpensesProps } from '../types';
 import { filterExpensesByMonth } from '../operations';
-import { ExpensesTable } from './ExpensesTable';
+import ExpensesTable from './ExpensesTable';
 
 export const MonthlyExpenses: FC<MonthlyExpensesProps> = ({
   expenses,

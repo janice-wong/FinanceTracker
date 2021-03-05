@@ -1,9 +1,18 @@
-import { Expense, ExpenseData, ExpenseMonth, FileUploadResult, MonthlyExpenseTotal } from './types';
+import {
+  Expense,
+  ExpenseCategory,
+  ExpenseData,
+  ExpenseMonth,
+  FileUploadResult,
+  MonthlyExpenseTotal
+} from './types';
 import moment from 'moment';
 import { Api } from './api';
 import { groupBy, sum } from 'ramda';
 
 export const loadExpenses = () => Api.listExpenses().then(response => response.data);
+
+export const deleteExpenses = () => Api.deleteExpenses();
 
 export const uploadFile = async (file: File): Promise<FileUploadResult> => {
   const formData = new FormData();
@@ -18,8 +27,8 @@ export const uploadFile = async (file: File): Promise<FileUploadResult> => {
   }
 };
 
-export const convertTransactionDateToMoment = (expenses: ExpenseData[]) =>
-  expenses.map(expense => ({...expense, transactionDate: moment(expense.transactionDate)}));
+export const convertTransactionDateToMoment = (expenses: ExpenseData[]): Expense[] =>
+  expenses.map(expense => ({...expense, transactionDate: moment(expense.transactionDate).toDate()}));
 
 export const getMonthlyTotals = (expenses: Expense[]): MonthlyExpenseTotal[] => {
   const monthlyExpenseTotals = [];
@@ -56,3 +65,5 @@ const getMonthIndexedAtOne = (transactionDate: Date): number => transactionDate.
 export const formatCurrency = (amount: Number) => amount.toFixed(2);
 
 export const getCurrencyStyle = (amount: Number) => amount < 0 ? { color: 'red' } : { color: 'black' };
+
+export const convertToString = (category: ExpenseCategory) => ExpenseCategory[category as keyof typeof ExpenseCategory];

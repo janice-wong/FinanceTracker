@@ -8,6 +8,18 @@ namespace FinanceTracker.Extensions
 {
     public static class ResultExtensions
     {
+        public static IActionResult UnwrapOrThrow(this Result result, string errorMessage)
+        {
+            if (result.IsSuccess)
+            {
+                return new OkObjectResult(result);
+            }
+
+            dynamic response = new JObject();
+            response.error = errorMessage;
+            return new BadRequestObjectResult(response);
+        }
+
         public static IActionResult UnwrapOrThrow<TValue>(this Result<TValue> result, string errorMessage)
         {
             if (result.IsSuccess)
@@ -20,10 +32,13 @@ namespace FinanceTracker.Extensions
             return new BadRequestObjectResult(response);
         }
 
+        public static async Task<IActionResult> UnwrapOrThrow(this Task<Result> resultTask, string errorMessage) =>
+            (await resultTask.DefaultAwait()).UnwrapOrThrow(errorMessage);
+
         public static async Task<IActionResult> UnwrapOrThrow<TValue>(this Task<Result<TValue>> resultTask, string errorMessage) =>
             (await resultTask.DefaultAwait()).UnwrapOrThrow(errorMessage);
 
-        private static ConfiguredTaskAwaitable<T> DefaultAwait<T>(
-            this Task<T> task) => task.ConfigureAwait(Result.DefaultConfigureAwait);
+        private static ConfiguredTaskAwaitable<T> DefaultAwait<T>(this Task<T> task) =>
+            task.ConfigureAwait(Result.DefaultConfigureAwait);
     }
 }

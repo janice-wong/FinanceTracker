@@ -7,6 +7,7 @@ namespace FinanceTracker.Models
 {
     public class Expense
     {
+        public Guid Id { get; }
         public DateTime TransactionDate { get; }
         public DateTime PostDate { get; }
         public string Description { get; }

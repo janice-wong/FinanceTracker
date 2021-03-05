@@ -15,5 +15,7 @@ namespace FinanceTracker.Services
         }
 
         public async Task<Result<List<Expense>>> ListExpenses() => await _expenseDataService.List();
+
+        public async Task DeleteExpenses() => await _expenseDataService.DeleteAll();
     }
 }

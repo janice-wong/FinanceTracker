@@ -29,19 +29,26 @@ export interface MonthParams {
 }
 
 export interface ExpenseData {
+  id: string,
   amount: number,
-  category: string,
+  category: ExpenseCategory,
   description: string,
   transactionDate: string,
   type: string
 }
 
 export interface Expense {
+  id: string,
   amount: number,
-  category: string,
+  category: ExpenseCategory,
   description: string,
   transactionDate: Date,
   type: string
+}
+
+export interface ExpensesTableState {
+  filter: ExpenseCategory,
+  filteredExpenses: Expense[]
 }
 
 export interface Expenses {
@@ -56,4 +63,17 @@ export interface ExpenseMonth {
 export interface MonthlyExpenseTotal {
   formattedExpenseMonth: string,
   total: number
+}
+
+export enum ExpenseCategory {
+  Undefined = '',
+  FoodAndDrink = 'Food & Drink',
+  Groceries = 'Groceries',
+  Shopping = 'Shopping',
+  HealthAndWellness = 'Health & Wellness',
+  Travel = 'Travel',
+  FeesAndAdjustments = 'Fees & Adjustments',
+  Gas = 'Gas',
+  Entertainment = 'Entertainment',
+  Misc = 'Misc',
 }

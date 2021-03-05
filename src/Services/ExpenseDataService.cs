@@ -17,6 +17,7 @@ namespace FinanceTracker.Services
         {
             var sql = $@"
                 SELECT
+                    id AS {nameof(Expense.Id)},
                     transaction_date AS {nameof(Expense.TransactionDate)},
                     post_date AS {nameof(Expense.PostDate)},
                     description AS {nameof(Expense.Description)},
@@ -77,7 +78,7 @@ namespace FinanceTracker.Services
 
         public async Task DeleteAll()
         {
-            var sql = "DELETE FROM expense;";
+            const string sql = "DELETE FROM expense;";
             await Result.Try(
                 async () => await ExecuteWithNewConnection(connection => connection.ExecuteAsync(sql)),
                 exception => throw new Exception(exception.Message));

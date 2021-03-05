@@ -9,9 +9,12 @@ import {
   MDBContainer,
   MDBRow
 } from 'mdbreact';
+import { deleteExpenses } from '../operations';
 
-export const Home: FC<HomeProps> = ({ expenses }) =>
-  (
+export const Home: FC<HomeProps> = ({ expenses }) => {
+  const handleDelete = async ()  => await deleteExpenses();
+
+  return (
     <div>
       {
         expenses.length > 0 ? (
@@ -24,6 +27,7 @@ export const Home: FC<HomeProps> = ({ expenses }) =>
               <MDBRow>
                 <MDBCol><MDBBtn href="/expenses" className="btn-block" color="primary">See all expenses</MDBBtn></MDBCol>
                 <MDBCol><MDBBtn href="/months" className="btn-block" color="primary">See all expenses by month</MDBBtn></MDBCol>
+                <MDBCol><MDBBtn href="/" className="btn-block" color="primary" onClick={() => handleDelete()}>Delete all expenses</MDBBtn></MDBCol>
               </MDBRow>
             </MDBContainer>
           </div>
@@ -33,10 +37,11 @@ export const Home: FC<HomeProps> = ({ expenses }) =>
               Imports
             </div>
             <div className="card-body">
-              <FileUpload/>
+              <FileUpload />
             </div>
           </div>
         )
       }
     </div>
   );
+};

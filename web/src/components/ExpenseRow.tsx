@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import moment from 'moment';
 import { Expense } from '../types';
-import { formatCurrency, getCurrencyStyle } from '../operations';
+import { convertToString, formatCurrency, getCurrencyStyle } from '../operations';
 
 export const ExpenseRow: FC<Expense> = ({
   transactionDate,
@@ -13,7 +13,7 @@ export const ExpenseRow: FC<Expense> = ({
     <tr>
       <td>{moment(transactionDate).format('MMM DD')}</td>
       <td>{description}</td>
-      <td>{category}</td>
+      <td>{convertToString(category)}</td>
       <td>{type}</td>
       <td align='right' style={getCurrencyStyle(amount)}>{formatCurrency(amount)}</td>
     </tr>
